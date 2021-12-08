@@ -15,8 +15,9 @@ unsigned int cli_len ;
 int pos[2],win=0;
 char poisition[9];
 
-char user_list[3][10]={"Player1","Player2","Player3"};
-char pass_list[3][10]={"12345","22345","32345"};
+char **user_list;
+char **pass_list;
+int new_pos=3;
 char* name;
 
 
@@ -392,7 +393,7 @@ void write_read(int choice)
 }
 
 int check_login(char* name,char* pass){
-    for(int i=0;i<3;i++) if(strcmp(name,user_list[i])==0 && strcmp(pass,pass_list[i])==0) return i+1;
+    for(int i=0;i<new_pos;i++)if(strcmp(name,user_list[i])==0 && strcmp(pass,pass_list[i])==0) return i+1;
     return 0;
 }
 
@@ -439,6 +440,18 @@ void HandleInput(char* temp_input){
 
 int main()
 {
+
+    user_list=calloc(10,sizeof(char*));
+    for(int i=0;i<10;i++){
+    user_list[i]=calloc(10,sizeof(char));
+    }
+    pass_list=calloc(10,sizeof(char*));
+    for(int i=0;i<10;i++){
+    pass_list[i]=calloc(10,sizeof(char));
+    }
+    strcpy(user_list[0],"Player1");strcpy(pass_list[0],"12345");
+    strcpy(user_list[1],"Player2");strcpy(pass_list[1],"22345");
+    strcpy(user_list[2],"Player3");strcpy(pass_list[2],"32345");
     char temp_name[10]={0};
     char temp_pass[10]={0};
     int err_flag=-1;
@@ -455,7 +468,18 @@ int main()
     scanf("%s",temp_name);
     printf("密碼 :");
     scanf("%s",temp_pass);
-    }while(!(err_flag=check_login(temp_name,temp_pass)));
+    if((err_flag=check_login(temp_name,temp_pass))==0){
+    	printf("此用戶不存在，你是要註冊嗎？(y/n)\n");
+    	char c[32]={0};
+    	scanf("%s",c);
+    	if(c[0]=='y'||c[0]=='Y'){
+    	  err_flag=new_pos;
+    	  strcpy(user_list[new_pos],temp_name);
+    	  strcpy(pass_list[new_pos],temp_pass);
+    	  new_pos++;
+    	}
+    }
+    }while(!(err_flag));
     name=temp_name;
     system("clear");
     lobby: system("clear");
